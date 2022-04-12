@@ -5,17 +5,32 @@ const path = require("path");
 const session = require("express-session");
 const nunjucks = require("nunjucks");
 const dotenv = require("dotenv");
+const passport = require("passport");
 
 dotenv.config();
 const pageRouter = require("./routes/page");
 
+const { sequelize } = require("./models/index");
+
+const passportConfig = require("./passport/index");
+
 const app = express();
+passportConfig();
 app.set("port", process.env.PORT || 8001);
 app.set("view engine", "html");
 nunjucks.configure("views", {
   express: app,
   watch: true,
 });
+
+sequelize
+  .sync({ force: false })
+  .then(() => {
+    console.log("db connected");
+  })
+  .catch((err) => {
+    console.error(err);
+  });
 
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
@@ -33,6 +48,9 @@ app.use(
     },
   })
 );
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/", pageRouter);
 
