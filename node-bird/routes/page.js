@@ -1,20 +1,21 @@
 const express = require("express");
+const { isLoggedIn, isNotLoggedIn } = require("./middlewares");
 
 const router = express.Router();
 
 router.use((req, res, next) => {
-  res.locals.user = null;
+  res.locals.user = req.user;
   res.locals.followerCount = 0;
   res.locals.followingCount = 0;
   res.locals.followingIdList = [];
   next();
 });
 
-router.get("/profile", (req, res) => {
+router.get("/profile", isLoggedIn, (req, res) => {
   res.render("profile", { title: "my information - Nodebird" });
 });
 
-router.get("/join", (req, res) => {
+router.get("/join", isNotLoggedIn, (req, res) => {
   res.render("join", { title: "signup - Nodebird" });
 });
 
