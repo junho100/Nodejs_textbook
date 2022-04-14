@@ -28,7 +28,7 @@ nunjucks.configure("views", {
 });
 
 sequelize
-  .sync({ force: false })
+  .sync({ force: false }) // sequelize 객체 서버 연결
   .then(() => {
     console.log("db connected");
   })

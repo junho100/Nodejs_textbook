@@ -1,3 +1,5 @@
+// 흐름 : 모델정의 -> 모델 models/index.js에 등록 (sequelize객체에 연결) -> app.js 연결
+// sequelize객체 생성
 const Sequelize = require("sequelize");
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config")[env];
