@@ -1,3 +1,4 @@
+//페이지렌더링 라우터
 const express = require("express");
 const { isLoggedIn, isNotLoggedIn } = require("./middlewares");
 const { Post, User, Hashtag } = require("../models/index");
@@ -12,7 +13,7 @@ router.use((req, res, next) => {
     ? req.user.Followings.map((f) => f.id)
     : [];
   next();
-});
+}); //locals로 필요한 변수들 저장 (템플릿 엔진에서 공통적으로 사용하기 때문)
 
 router.get("/profile", isLoggedIn, (req, res) => {
   res.render("profile", { title: "my information - Nodebird" });
