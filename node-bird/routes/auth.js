@@ -53,9 +53,10 @@ router.get("/logout", isLoggedIn, (req, res) => {
   res.redirect("/");
 });
 
-router.get("/kakao", passport.authenticate("kakao"));
+router.get("/kakao", passport.authenticate("kakao")); // kakao 로그인 화면으로 로그인 전략 수행
 
 router.get(
+  // kakao에서 로그인 결과 받고 다시 passport.authenticate 호출
   "/kakao/callback",
   passport.authenticate("kakao", {
     failureRedirect: "/",
@@ -64,5 +65,5 @@ router.get(
     res.redirect("/");
   }
 );
-
+// kakao 로그인은 내부적으로 로그인 성공 시 req.login 호출 -> 콜백함수 직접 호출할 필요 없음
 module.exports = router;

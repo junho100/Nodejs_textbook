@@ -43,7 +43,7 @@ router.get("/", async (req, res, next) => {
 });
 
 router.get("/hashtag", async (req, res, next) => {
-  const query = req.query.hashtag;
+  const query = req.query.hashtag; //target hashtag 쿼리스트링으로 받아옴
   if (!query) {
     return res.redirect("/");
   }

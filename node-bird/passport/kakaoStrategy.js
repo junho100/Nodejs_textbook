@@ -8,7 +8,7 @@ module.exports = () => {
     new KakaoStrategy(
       {
         clientID: process.env.KAKAO_ID,
-        callbackURL: "/auth/kakao/callback",
+        callbackURL: "/auth/kakao/callback", // kakako 인증 결과 받을 라우터
       },
       async (accessToken, refreshToken, profile, done) => {
         console.log("kakao profile", profile);

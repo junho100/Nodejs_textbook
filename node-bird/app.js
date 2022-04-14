@@ -38,7 +38,7 @@ sequelize
 
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public"))); // [domain]/public으로 접근 가능 -> 폴더 구조 짐작 못하기 때문에 보안
-app.use("/img", express.static(path.join(__dirname, "uploads")));
+app.use("/img", express.static(path.join(__dirname, "uploads"))); // /img로 uploads 폴더 접근가능
 app.use(express.json());
 app.use(express.urlencoded({ extended: false })); // req.body에 요청 정보를 파싱하여 접근 가능하게 한다.
 app.use(cookieParser(process.env.COOKIE_SECRET));
