@@ -6,7 +6,7 @@ const path = require("path");
 const session = require("express-session"); // 세션을 서버에 저장하고 session id를 cookie를 통해 사용자와 주고받게 함
 const nunjucks = require("nunjucks");
 const dotenv = require("dotenv");
-const passport = require("passport");
+const passport = require("passport"); // authentication
 
 dotenv.config(); // 환경변수들을 불러오기때문에 최대한 상단에 위치
 const pageRouter = require("./routes/page");
@@ -19,7 +19,7 @@ const { sequelize } = require("./models/index");
 const passportConfig = require("./passport/index");
 
 const app = express();
-passportConfig();
+passportConfig(); // passport 설정
 app.set("port", process.env.PORT || 8001);
 app.set("view engine", "html");
 nunjucks.configure("views", {
@@ -54,8 +54,8 @@ app.use(
   })
 );
 
-app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.initialize()); // req 객체에 passport 설정 주입
+app.use(passport.session()); // req.session 객체에 passport 정보 저장
 
 app.use("/", pageRouter);
 app.use("/auth", authRouter);
