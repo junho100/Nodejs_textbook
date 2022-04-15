@@ -60,4 +60,19 @@ router.post("/", isLoggedIn, upload2.none(), async (req, res, next) => {
   }
 });
 
+router.delete("/:id", async (req, res, next) => {
+  const twitId = parseInt(req.params.id, 10);
+  try {
+    await Post.destroy({
+      where: {
+        id: twitId,
+      },
+    });
+    res.send("success");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 module.exports = router;
