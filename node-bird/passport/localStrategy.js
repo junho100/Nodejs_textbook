@@ -16,7 +16,7 @@ module.exports = () => {
       async (email, password, done) => {
         // done 파라미터는 authenticate에 콜백함수
         try {
-          const exUser = await User.findOne({ where: email });
+          const exUser = await User.findOne({ where: { email } });
           if (exUser) {
             const result = await bcrypt.compare(password, exUser.password);
             if (result) {

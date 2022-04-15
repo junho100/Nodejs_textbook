@@ -42,6 +42,9 @@
       {% if not followingIdList.includes(twit.User.id) and twit.User.id !==
       user.id %}
       <button class="twit-follow">팔로우하기</button>
+      {% endif %} {% if followingIdList.includes(twit.User.id) and twit.User.id
+      !== user.id %}
+      <button class="twit-unfollow">언팔로우하기</button>
       {% endif %}
       <div class="twit-content">{{twit.content}}</div>
       {% if twit.img %}
@@ -72,13 +75,33 @@
   }
   document.querySelectorAll(".twit-follow").forEach(function (tag) {
     tag.addEventListener("click", function () {
+      const myId = document.querySelector("#my-id"); // profile 태그 안 hidden input
+      if (myId) {
+        const userId = tag.parentNode.querySelector(".twit-user-id").value;
+        if (userId !== myId.value) {
+          if (confirm(`팔로잉하시겠습니까?`)) {
+            axios
+              .post(`/user/${userId}/follow`)
+              .then(() => {
+                location.reload();
+              })
+              .catch((err) => {
+                console.error(err);
+              });
+          }
+        }
+      }
+    });
+  });
+  document.querySelectorAll(".twit-unfollow").forEach((tag) => {
+    tag.addEventListener("click", () => {
       const myId = document.querySelector("#my-id");
       if (myId) {
         const userId = tag.parentNode.querySelector(".twit-user-id").value;
         if (userId !== myId.value) {
-          if (confirm("팔로잉하시겠습니까?")) {
+          if (confirm("언팔로잉하시겠습니까?")) {
             axios
-              .post(`/user/${userId}/follow`)
+              .post(`/user/${userId}/unfollow`)
               .then(() => {
                 location.reload();
               })
