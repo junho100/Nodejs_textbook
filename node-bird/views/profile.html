@@ -12,5 +12,28 @@
     <div>{{follower.nick}}</div>
     {% endfor %} {% endif %}
   </div>
+  {% if isUp %}
+  <form class="update">
+    <input />
+    <button>Submit</button>
+  </form>
+  {% endif %}
 </div>
+{% endblock %} {% block script %}
+<script>
+  const form = document.querySelector(".update");
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const newUsername = e.target[0].value;
+      axios
+        .patch("/user/nick", {
+          nick: newUsername,
+        })
+        .then(() => {
+          location.reload();
+        });
+    });
+  }
+</script>
 {% endblock %}

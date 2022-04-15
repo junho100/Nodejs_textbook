@@ -16,6 +16,11 @@ router.use((req, res, next) => {
 }); //locals로 필요한 변수들 저장 (템플릿 엔진에서 공통적으로 사용하기 때문)
 
 router.get("/profile", isLoggedIn, (req, res) => {
+  const isUp = req.param("update");
+  if (isUp) {
+    res.locals.isUp = true;
+    return res.render("profile", { isUp: true });
+  }
   res.render("profile", { title: "my information - Nodebird" });
 });
 
