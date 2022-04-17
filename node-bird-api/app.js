@@ -10,6 +10,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 const authRouter = require("./routes/auth");
 const indexRouter = require("./routes/index");
+const v1 = require("./routes/v1");
 
 const { sequelize } = require("./models/index");
 
@@ -18,7 +19,8 @@ const passportConfig = require("./passport/index");
 const app = express();
 passportConfig();
 app.set("port", process.env.PORT || 8002);
-app.set("view engine", {
+app.set("view engine", "html");
+nunjucks.configure("views", {
   express: app,
   watch: true,
 });
@@ -52,6 +54,7 @@ app.use(passport.session());
 
 app.use("/auth", authRouter);
 app.use("/", indexRouter);
+app.use("/v1", v1);
 
 app.use((req, res, next) => {
   const error = new Error(`${req.method} ${req.url} No Router`);
