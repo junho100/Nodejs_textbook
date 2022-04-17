@@ -39,8 +39,13 @@
       <input type="hidden" value="{{twit.User.id}}" class="twit-user-id" />
       <input type="hidden" value="{{twit.id}}" class="twit-id" />
       <div class="twit-author">{{twit.User.nick}}</div>
-      {% if not followingIdList.includes(twit.User.id) and twit.User.id !==
-      user.id %}
+      <span>{{twit.likes}}</span>
+      {% if not likePosts.includes(twit.id) %}
+      <button class="twit-like">LIKE</button>
+      {% endif %} {% if likePosts.includes(twit.id) %}
+      <button class="twit-unlike">UNLIKE</button>
+      {% endif %} {% if not followingIdList.includes(twit.User.id) and
+      twit.User.id !== user.id %}
       <button class="twit-follow">팔로우하기</button>
       {% endif %} {% if followingIdList.includes(twit.User.id) and twit.User.id
       !== user.id %}
@@ -120,6 +125,32 @@
       const twitId = e.target.parentNode.querySelector(".twit-id").value;
       axios
         .delete(`/post/${twitId}`)
+        .then(() => {
+          location.reload();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+  });
+  document.querySelectorAll(".twit-like").forEach((tag) => {
+    tag.addEventListener("click", (e) => {
+      const twitId = e.target.parentNode.querySelector(".twit-id").value;
+      axios
+        .patch(`/post/${twitId}/like`)
+        .then(() => {
+          location.reload();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    });
+  });
+  document.querySelectorAll(".twit-unlike").forEach((tag) => {
+    tag.addEventListener("click", (e) => {
+      const twitId = e.target.parentNode.querySelector(".twit-id").value;
+      axios
+        .patch(`/post/${twitId}/unlike`)
         .then(() => {
           location.reload();
         })

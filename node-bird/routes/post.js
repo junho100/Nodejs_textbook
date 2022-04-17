@@ -3,7 +3,7 @@ const multer = require("multer"); // 파일 업로드 구현
 const path = require("path");
 const fs = require("fs");
 
-const { Post, Hashtag } = require("../models/index");
+const { Post, Hashtag, User } = require("../models/index");
 const { isLoggedIn } = require("./middlewares");
 
 const router = express.Router();
@@ -68,6 +68,36 @@ router.delete("/:id", async (req, res, next) => {
         id: twitId,
       },
     });
+    res.send("success");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.patch("/:id/like", isLoggedIn, async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.id, 10);
+    const post = await Post.findOne({ where: { id: postId } });
+    const userId = parseInt(req.user.id, 10);
+    const user = await User.findOne({ where: { id: userId } });
+    await post.addUsers(user);
+    await Post.update({ likes: post.likes + 1 }, { where: { id: postId } });
+    res.send("success");
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.patch("/:id/unlike", isLoggedIn, async (req, res, next) => {
+  try {
+    const postId = parseInt(req.params.id, 10);
+    const post = await Post.findOne({ where: { id: postId } });
+    const userId = parseInt(req.user.id, 10);
+    const user = await User.findOne({ where: { id: userId } });
+    await post.removeUsers(user);
+    await Post.update({ likes: post.likes - 1 }, { where: { id: postId } });
     res.send("success");
   } catch (error) {
     console.error(error);

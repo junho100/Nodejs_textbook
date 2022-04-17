@@ -12,6 +12,8 @@ router.use((req, res, next) => {
   res.locals.followingIdList = req.user
     ? req.user.Followings.map((f) => f.id)
     : [];
+  res.locals.likePosts = req.user ? req.user.Posts.map((p) => p.id) : [];
+  console.log(req.user);
   next();
 }); //locals로 필요한 변수들 저장 (템플릿 엔진에서 공통적으로 사용하기 때문)
 
@@ -42,8 +44,8 @@ router.get("/", async (req, res, next) => {
       twits: posts,
     });
   } catch (error) {
-    console.error(err);
-    next(err);
+    console.error(error);
+    next(error);
   }
 });
 
