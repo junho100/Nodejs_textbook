@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const RateLimit = require("express-rate-limit");
 
 //로그인 여부 미들웨어.
 exports.isLoggedIn = (req, res, next) => {
@@ -35,4 +36,22 @@ exports.verifyToken = (req, res, next) => {
       message: "invalid token",
     });
   }
+};
+
+exports.apiLimiter = RateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
+  handler(req, res) {
+    res.status(this.statusCode).json({
+      code: this.statusCode,
+      message: "you can request ten times a minute",
+    });
+  },
+});
+
+exports.deprecated = (req, res) => {
+  res.status(410).json({
+    code: 410,
+    message: "new version is updated. use new version",
+  });
 };
