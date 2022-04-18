@@ -1,7 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
-const url = require("url");
 
 const { verifyToken, apiLimiter } = require("./middlewares");
 const { Domain, User, Post, Hashtag } = require("../models/index");
@@ -9,14 +8,17 @@ const { Domain, User, Post, Hashtag } = require("../models/index");
 const router = express.Router();
 
 router.use(async (req, res, next) => {
+  // url.parse -> new URL 사용 (deprecated)
+  const origin = new URL(req.get("origin"));
   const domain = await Domain.findOne({
-    where: { host: url.parse(req.get("origin")).host },
+    // domain의 host와 client secret 모두 일치하는지 확인
+    where: { host: origin.host },
   });
   if (domain) {
     cors({
-      origin: req.get("origin"),
+      origin: req.get("origin"), // domain 등록되었으면 cors 허용
       credentials: true,
-    })(req, res, next);
+    })(req, res, next); // if문 분기 등 미들웨어 커스터마이징 시 사용 패턴
   } else {
     next();
   }

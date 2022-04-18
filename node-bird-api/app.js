@@ -3,7 +3,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const passport = require("passport");
 const morgan = require("morgan");
-const session = require("express-session");
+const session = require("express-session"); // req.session 통해 session id 주고받을 수 있음
 const nunjucks = require("nunjucks");
 const dotenv = require("dotenv");
 
@@ -25,8 +25,8 @@ nunjucks.configure("views", {
   express: app,
   watch: true,
 });
-sequelize
-  .sync({ force: false })
+sequelize // sync는 현재 모델과 db를 동기화 한다.
+  .sync({ force: false }) //  force : 존재한다면 drop 후 생성, alter : 현재 model에 맞게 수정
   .then(() => {
     console.log("db connected");
   })
@@ -38,9 +38,10 @@ app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser(process.env.COOKIE_SECRET));
+app.use(cookieParser(process.env.COOKIE_SECRET)); //cookie는 client에 저장되는 정보. cookie-parser 통해 req.cookies 속성으로 서버에서 접근할 수 있다.
 app.use(
   session({
+    // session은 server에 정보가 저장된다. cookie 를 통해 사용자 id를 받고 서버의 session에서 full 정보를 받는 구조
     resave: false,
     saveUninitialized: false,
     secret: process.env.COOKIE_SECRET,

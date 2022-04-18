@@ -24,6 +24,7 @@ app.use(
     saveUninitialized: false,
     secret: process.env.COOKIE_SECRET,
     cookie: {
+      //세션쿠키를 주고받을때의 쿠키 설정
       httpOnly: true,
       secure: false,
     },

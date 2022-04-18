@@ -3,7 +3,7 @@ const axios = require("axios");
 
 const router = express.Router();
 const URL = "http://localhost:8002/v2";
-axios.defaults.headers.origin = "http://localhost:4000";
+axios.defaults.headers.origin = "http://localhost:4000"; // origin header에 추가 -> cors
 const request = async (req, api) => {
   try {
     if (!req.session.jwt) {

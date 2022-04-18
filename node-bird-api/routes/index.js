@@ -8,12 +8,12 @@ const router = express.Router();
 router.get("/", async (req, res, next) => {
   try {
     const user = await User.findOne({
-      where: { id: (req.user && req.user.id) || null },
+      where: { id: (req.user && req.user.id) || null }, // 로그인 성공 시 req.user 접근가능
       include: { model: Domain },
     });
     res.render("login", {
       user,
-      domains: user && user.Domains,
+      domains: user && user.Domains, // 단축평가 -> 둘다 있으면 오른쪽 할당, 하나라도 false면 false 반환
     });
   } catch (err) {
     console.error(err);
