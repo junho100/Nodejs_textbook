@@ -2,7 +2,7 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const cors = require("cors");
 
-const { verifyToken, apiLimiter } = require("./middlewares");
+const { verifyToken, freeApiLimiter, preApiLimiter } = require("./middlewares");
 const { Domain, User, Post, Hashtag } = require("../models/index");
 
 const router = express.Router();
@@ -24,7 +24,27 @@ router.use(async (req, res, next) => {
   }
 });
 
-router.post("/token", apiLimiter, async (req, res) => {
+const apiLimit = async (req, res, next) => {
+  try {
+    const origin = new URL(req.get("origin"));
+    const domain = await Domain.findOne({
+      where: { host: origin.host },
+    });
+    if (domain.type === "free") {
+      freeApiLimiter(req, res, next);
+    } else if (domain.type === "premium") {
+      preApiLimiter(req, res, next);
+    } else {
+      next();
+    }
+  } catch (error) {
+    console.error(error);
+    error.status = 500;
+    res.send("error");
+  }
+};
+
+router.post("/token", apiLimit, async (req, res) => {
   const { clientSecret } = req.body;
   try {
     const domain = await Domain.findOne({
@@ -65,11 +85,11 @@ router.post("/token", apiLimiter, async (req, res) => {
   }
 });
 
-router.get("/test", verifyToken, apiLimiter, (req, res) => {
+router.get("/test", verifyToken, apiLimit, (req, res) => {
   res.json(req.decoded);
 });
 
-router.get("/posts/my", apiLimiter, verifyToken, (req, res) => {
+router.get("/posts/my", apiLimit, verifyToken, (req, res) => {
   Post.findAll({ where: { userId: req.decoded.id } })
     .then((posts) => {
       console.log(posts);
@@ -87,37 +107,32 @@ router.get("/posts/my", apiLimiter, verifyToken, (req, res) => {
     });
 });
 
-router.get(
-  "/posts/hashtag/:title",
-  verifyToken,
-  apiLimiter,
-  async (req, res) => {
-    try {
-      const hashtag = await Hashtag.findOne({
-        where: { title: req.params.title },
-      });
-      if (!hashtag) {
-        return res.status(404).json({
-          code: 404,
-          message: "no result",
-        });
-      }
-      const posts = await hashtag.getPosts();
-      return res.json({
-        code: 200,
-        payload: posts,
-      });
-    } catch (error) {
-      console.error(error);
-      return res.status(500).json({
-        code: 500,
-        message: "server error",
+router.get("/posts/hashtag/:title", verifyToken, apiLimit, async (req, res) => {
+  try {
+    const hashtag = await Hashtag.findOne({
+      where: { title: req.params.title },
+    });
+    if (!hashtag) {
+      return res.status(404).json({
+        code: 404,
+        message: "no result",
       });
     }
+    const posts = await hashtag.getPosts();
+    return res.json({
+      code: 200,
+      payload: posts,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      code: 500,
+      message: "server error",
+    });
   }
-);
+});
 
-router.get("/follow", verifyToken, apiLimiter, async (req, res, next) => {
+router.get("/follow", verifyToken, apiLimit, async (req, res, next) => {
   try {
     const user = await User.findOne({
       where: { id: req.decoded.id },

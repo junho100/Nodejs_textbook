@@ -41,9 +41,20 @@ exports.verifyToken = (req, res, next) => {
   }
 };
 
-exports.apiLimiter = RateLimit({
+exports.freeApiLimiter = RateLimit({
   windowMs: 60 * 1000,
-  max: 100,
+  max: 1,
+  handler(req, res) {
+    res.status(this.statusCode).json({
+      code: this.statusCode,
+      message: "you can request once a minute",
+    });
+  },
+});
+
+exports.preApiLimiter = RateLimit({
+  windowMs: 60 * 1000,
+  max: 10,
   handler(req, res) {
     res.status(this.statusCode).json({
       code: this.statusCode,
