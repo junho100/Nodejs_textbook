@@ -24,6 +24,16 @@ const request = async (req, api) => {
   }
 };
 
+router.get("/follow", async (req, res, next) => {
+  try {
+    const result = await request(req, "/follow");
+    res.send(result.data);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+});
+
 router.get("/mypost", async (req, res, next) => {
   try {
     const result = await request(req, "/posts/my");
