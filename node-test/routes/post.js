@@ -3,7 +3,7 @@ const multer = require("multer"); // 파일 업로드 구현
 const path = require("path");
 const fs = require("fs");
 
-const { Post, Hashtag, User } = require("../models/index");
+const { Post, User } = require("../models/index");
 const { isLoggedIn } = require("./middlewares");
 const { uploadImage, createPost, deleteImage } = require("../controllers/post");
 

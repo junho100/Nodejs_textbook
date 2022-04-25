@@ -1,3 +1,5 @@
+const { Hashtag, Post } = require("../models/index");
+
 exports.uploadImage = (req, res) => {
   console.log(req.file);
   res.json({ url: `/img/${req.file.filename}` });
