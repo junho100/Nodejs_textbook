@@ -5,6 +5,7 @@ const fs = require("fs");
 
 const { Post, Hashtag, User } = require("../models/index");
 const { isLoggedIn } = require("./middlewares");
+const { uploadImage, createPost, deleteImage } = require("../controllers/post");
 
 const router = express.Router();
 
@@ -28,52 +29,12 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
-router.post("/img", isLoggedIn, upload.single("img"), (req, res) => {
-  console.log(req.file);
-  res.json({ url: `/img/${req.file.filename}` });
-});
+router.post("/img", isLoggedIn, upload.single("img"), uploadImage);
 
 const upload2 = multer();
-router.post("/", isLoggedIn, upload2.none(), async (req, res, next) => {
-  // multipart data req.body에 있으면 무조건 multer 거쳐야함
-  try {
-    const post = await Post.create({
-      content: req.body.content,
-      img: req.body.url,
-      UserId: req.user.id,
-    });
-    const hashtags = req.body.content.match(/#[^\s#]*/g);
-    if (hashtags) {
-      const result = await Promise.all(
-        hashtags.map((tag) => {
-          return Hashtag.findOrCreate({
-            where: { title: tag.slice(1).toLowerCase() },
-          });
-        })
-      );
-      await post.addHashtags(result.map((r) => r[0]));
-    }
-    res.redirect("/");
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
+router.post("/", isLoggedIn, upload2.none(), createPost);
 
-router.delete("/:id", async (req, res, next) => {
-  const twitId = parseInt(req.params.id, 10);
-  try {
-    await Post.destroy({
-      where: {
-        id: twitId,
-      },
-    });
-    res.send("success");
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
+router.delete("/:id", deleteImage);
 
 router.patch("/:id/like", isLoggedIn, async (req, res, next) => {
   try {
