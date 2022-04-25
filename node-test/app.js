@@ -75,6 +75,4 @@ app.use((err, req, res, next) => {
   res.render("error");
 }); // 최하단 오류 미들웨어 (오류, next(err)시 이 미들웨어로 온다.)
 
-app.listen(app.get("port"), () => {
-  console.log(app.get("port"), "port waiting...");
-});
+module.exports = app;
