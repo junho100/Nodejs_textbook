@@ -1,5 +1,6 @@
 jest.mock("../models/post");
 jest.mock("../models/hashtag");
+jest.mock("../models/user");
 const Post = require("../models/post");
 const Hashtag = require("../models/hashtag");
 const { uploadImage, createPost, deletePost } = require("./post");
@@ -40,7 +41,7 @@ describe("createPost", () => {
     };
     Post.create.mockReturnValue(
       Promise.resolve({
-        addHashtags() {
+        addHashtags(arr) {
           return Promise.resolve();
         },
       })
@@ -72,6 +73,15 @@ describe("createPost", () => {
   });
 
   test("error시 next(error) 호출", async () => {
+    const req = {
+      body: {
+        content: "test content",
+        url: "test url",
+      },
+      user: {
+        id: 0,
+      },
+    };
     const error = "test error";
     Post.create.mockReturnValue(Promise.reject(error));
     await createPost(req, res, next);
