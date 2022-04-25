@@ -6,7 +6,6 @@ exports.uploadImage = (req, res) => {
 };
 
 exports.createPost = async (req, res, next) => {
-  // multipart data req.body에 있으면 무조건 multer 거쳐야함
   try {
     const post = await Post.create({
       content: req.body.content,
@@ -31,7 +30,7 @@ exports.createPost = async (req, res, next) => {
   }
 };
 
-exports.deleteImage = async (req, res, next) => {
+exports.deletePost = async (req, res, next) => {
   const twitId = parseInt(req.params.id, 10);
   try {
     await Post.destroy({

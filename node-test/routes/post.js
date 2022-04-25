@@ -5,7 +5,7 @@ const fs = require("fs");
 
 const { Post, User } = require("../models/index");
 const { isLoggedIn } = require("./middlewares");
-const { uploadImage, createPost, deleteImage } = require("../controllers/post");
+const { uploadImage, createPost, deletePost } = require("../controllers/post");
 
 const router = express.Router();
 
@@ -32,9 +32,10 @@ const upload = multer({
 router.post("/img", isLoggedIn, upload.single("img"), uploadImage);
 
 const upload2 = multer();
+// multipart data req.body에 있으면 무조건 multer 거쳐야함
 router.post("/", isLoggedIn, upload2.none(), createPost);
 
-router.delete("/:id", deleteImage);
+router.delete("/:id", deletePost);
 
 router.patch("/:id/like", isLoggedIn, async (req, res, next) => {
   try {
