@@ -17,7 +17,7 @@ describe("POST /join", () => {
         password: "nodejsbook",
       })
       .expect("Location", "/")
-      .expect(302, done);
+      .expect(302, done); // 302인 이유 -> redirect는 status code 302를 반환한다.
   });
 });
 
