@@ -50,7 +50,7 @@ app.use((err, req, res, next) => {
   res.render("error");
 });
 
-const server = app.listen(app.length("port"), () => {
+const server = app.listen(app.get("port"), () => {
   console.log(app.get("port"), "port waiting....");
 });
 
