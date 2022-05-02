@@ -1,29 +1,58 @@
-const WebSocket = require("ws");
+const SocketIO = require("socket.io"); // npm i socket.io@2 -> 2버전 설치
+const axios = require("axios");
 
-module.exports = (server) => {
-  const wss = new WebSocket.Server({ server }); // web socket server 생성
+module.exports = (server, app, sessionMiddleware) => {
+  const io = SocketIO(server, { path: "/socket.io" }); // 클라이언트가 접속할 경로 path에 추가 -> 클라이언트도 path에 동일한 경로 넣어야함
+  app.set("io", io);
+  const room = io.of("/room");
+  const chat = io.of("/chat");
 
-  wss.on("connection", (ws, req) => {
-    // 연결 시
-    const ip = req.headers["x-forwarded-for"] || req.connection.remoteAddress; // client ip
-    console.log("new client connected", ip);
-    ws.on("message", (message) => {
-      // client에서 message 수신 시
-      console.log(message.toString());
+  io.use((socket, next) => {
+    sessionMiddleware(socket.request, socket.request.res, next);
+  });
+
+  room.on("connection", (socket) => {
+    console.log("room namespace connected");
+    socket.on("disconnect", () => {
+      console.log("room namespace disconnected");
     });
-    ws.on("error", (error) => {
-      console.error(error); // client - server 통신 중 에러
+  });
+
+  chat.on("connection", (socket) => {
+    console.log("chat namespace connected");
+    const req = socket.request;
+    const {
+      headers: { referer },
+    } = req;
+    const roomId = referer
+      .split("/")
+      [referer.split("/").length - 1].replace(/\?.+/, "");
+    socket.join(roomId);
+    socket.to(roomId).emit("join", {
+      user: "system",
+      chat: `${req.session.color} joined`,
     });
-    ws.on("close", () => {
-      // client 접속 해제 시
-      console.log("client disconnected", ip);
-      clearInterval(ws.interval);
-    });
-    ws.interval = setInterval(() => {
-      if (ws.readyState === ws.OPEN) {
-        // web socket server 상태 확인 (CONNECTING, OPEN, CLOSING, CLOSED)
-        ws.send("server send message to client");
+
+    socket.on("disconnect", () => {
+      console.log("chat namespace disconnected");
+      socket.leave(roomId);
+      const currentRoom = socket.adapter.rooms[roomId];
+      const userCount = currentRoom ? currentRoom.length : 0;
+      if (userCount === 0) {
+        axios
+          .delete(`http://localhost:8005/room/${roomId}`)
+          .then(() => {
+            console.log("delete room request success");
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+      } else {
+        socket.to(roomId).emit("exit", {
+          user: "system",
+          chat: `${req.session.color} exit`,
+        });
       }
-    }, 3000);
+    });
   });
 };

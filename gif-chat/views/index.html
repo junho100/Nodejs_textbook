@@ -6,20 +6,16 @@
   </head>
   <body>
     <div>F12를 눌러 console 탭과 network 탭을 확인하세요.</div>
+    <script src="/socket.io/socket.io.js"></script>
     <script>
-      const webSocket = new WebSocket("ws://localhost:8005"); //WebSocket 객제는 window에 내장되어있다.
-      //프로토콜 : ws
-      webSocket.onopen = function () {
-        // open은 원래 내장되어있는 이벤트
-        console.log("서버와 웹소켓 연결 성공!");
-      }; //서버와 연결
-      webSocket.onmessage = function (event) {
-        // 서버의 message 이벤트에 대응
-        console.log(event.data);
-        console.log(event);
-        console.log("-----");
-        webSocket.send("클라이언트에서 서버로 답장을 보냅니다");
-      };
+      const socket = io.connect("http://localhost:8005", {
+        path: "/socket.io",
+        transports: ["websocket"],
+      });
+      socket.on("news", (data) => {
+        console.log(data);
+        socket.emit("reply", "Hello Node.js");
+      });
     </script>
   </body>
 </html>
