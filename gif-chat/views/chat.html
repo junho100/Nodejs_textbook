@@ -58,6 +58,7 @@
     document.querySelector("#chat-list").appendChild(div);
   });
   socket.on("chat", (data) => {
+    // 체팅 데이터 랜더링
     const div = document.createElement("div");
     if (data.user === "{{user}}") {
       div.classList.add("mine");
