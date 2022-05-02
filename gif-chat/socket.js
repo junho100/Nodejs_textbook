@@ -1,8 +1,8 @@
-const SocketIO = require("socket.io");
+const SocketIO = require("socket.io"); // npm i socket.io@2 -> 2버전 설치
 const axios = require("axios");
 
 module.exports = (server, app, sessionMiddleware) => {
-  const io = SocketIO(server, { path: "/socket.io" });
+  const io = SocketIO(server, { path: "/socket.io" }); // 클라이언트가 접속할 경로 path에 추가 -> 클라이언트도 path에 동일한 경로 넣어야함
   app.set("io", io);
   const room = io.of("/room");
   const chat = io.of("/chat");
