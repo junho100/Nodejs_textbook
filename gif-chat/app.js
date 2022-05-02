@@ -39,6 +39,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(sessionMiddleware);
 
 app.use((req, res, next) => {
+  // sessionID 통해서 color값 추출
   if (!req.session.color) {
     const colorHash = new ColorHash();
     req.session.color = colorHash.hex(req.sessionID);
@@ -66,4 +67,4 @@ const server = app.listen(app.get("port"), () => {
   console.log(app.get("port"), "port waiting....");
 });
 
-webSocket(server, app, sessionMiddleware);
+webSocket(server, app, sessionMiddleware); // app.set('io', io) 위해 app 전달
