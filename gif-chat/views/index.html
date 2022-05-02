@@ -7,7 +7,7 @@
   <body>
     <div>F12를 눌러 console 탭과 network 탭을 확인하세요.</div>
     <script>
-      const webSocket = new WebSocket("ws://localhost:8005"); //어떻게 require 없이 websocket 클래스를 불러올 수 있는가?
+      const webSocket = new WebSocket("ws://localhost:8005"); //WebSocket 객제는 window에 내장되어있다.
       //프로토콜 : ws
       webSocket.onopen = function () {
         // open은 원래 내장되어있는 이벤트
