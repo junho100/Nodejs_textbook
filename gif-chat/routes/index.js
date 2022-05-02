@@ -30,7 +30,7 @@ router.post("/room", async (req, res, next) => {
       owner: req.session.color,
       password: req.body.password,
     });
-    const io = req.app.get("io");
+    const io = req.app.get("io"); // req.app 내장객체
     io.of("/room").emit("newRoom", newRoom);
     res.redirect(`/room/${newRoom._id}?password=${req.body.password}`);
   } catch (error) {
@@ -49,7 +49,7 @@ router.get("/room/:id", async (req, res, next) => {
     if (room.password && room.password !== req.query.password) {
       return res.redirect("/?error=invalid password");
     }
-    const { rooms } = io.of("/chat").adapter;
+    const { rooms } = io.of("/chat").adapter; // rooms 프로퍼티 가지고 있음 roomID로 참조가능
     if (
       rooms &&
       rooms[req.params.id] &&
