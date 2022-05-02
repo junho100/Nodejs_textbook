@@ -62,6 +62,7 @@ app.use((err, req, res, next) => {
 });
 
 const server = app.listen(app.get("port"), () => {
+  // 서버 객체 반환
   console.log(app.get("port"), "port waiting....");
 });
 
