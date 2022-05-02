@@ -11,7 +11,7 @@ const connect = () => {
     MONGO_URL,
     {
       dbName: "gifchat",
-      useNewUrlParser: true,
+      useNewUrlParser: true, // 새로운 string parser 도입여부 -> 기본적으로 true 한다.
     },
     (error) => {
       if (error) {
