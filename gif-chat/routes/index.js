@@ -91,8 +91,12 @@ router.post("/room/:id/chat", async (req, res, next) => {
       user: req.session.color,
       chat: req.body.chat,
     });
-    req.app.get("io").of("/chat").to(req.params.id).emit("chat", chat);
-    res.send("ok");
+    if (req.body.isSys) {
+      res.send("ok");
+    } else {
+      req.app.get("io").of("/chat").to(req.params.id).emit("chat", chat);
+      res.send("ok");
+    }
   } catch (error) {
     console.error(error);
     next(error);
