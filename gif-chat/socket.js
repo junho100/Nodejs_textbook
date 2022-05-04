@@ -12,7 +12,7 @@ module.exports = (server, app, sessionMiddleware) => {
   }); // socket도 똑같이 미들웨어 사용 가능
 
   room.on("connection", (socket) => {
-    // namespace별로 이벤트리스터 추가 가능
+    // namespace별로 이벤트리스너 추가 가능
     console.log("room namespace connected");
     socket.on("disconnect", () => {
       console.log("room namespace disconnected");
@@ -29,9 +29,12 @@ module.exports = (server, app, sessionMiddleware) => {
       .split("/")
       [referer.split("/").length - 1].replace(/\?.+/, "");
     socket.join(roomId); // 접속 메서드
+    const currentRoom = socket.adapter.rooms[roomId];
+    const userCount = currentRoom ? currentRoom.length : 0;
     socket.to(roomId).emit("join", {
       user: "system",
       chat: `${req.session.color} joined`,
+      cnt: userCount,
     });
 
     socket.on("disconnect", () => {
@@ -52,6 +55,7 @@ module.exports = (server, app, sessionMiddleware) => {
         socket.to(roomId).emit("exit", {
           user: "system",
           chat: `${req.session.color} exit`,
+          cnt: userCount,
         });
       }
     });

@@ -30,6 +30,16 @@ const sessionMiddleware = session({
     secure: false,
   },
 });
+
+const colorSessionMiddleware = (req, res, next) => {
+  // sessionID 통해서 color값 추출
+  if (!req.session.color) {
+    const colorHash = new ColorHash();
+    req.session.color = colorHash.hex(req.sessionID);
+    console.log(req.session);
+  }
+  next();
+};
 app.use(morgan("dev"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/gif", express.static(path.join(__dirname, "uploads")));
@@ -38,14 +48,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(sessionMiddleware);
 
-app.use((req, res, next) => {
-  // sessionID 통해서 color값 추출
-  if (!req.session.color) {
-    const colorHash = new ColorHash();
-    req.session.color = colorHash.hex(req.sessionID);
-  }
-  next();
-});
+app.use(colorSessionMiddleware);
 
 app.use("/", indexRouter);
 
